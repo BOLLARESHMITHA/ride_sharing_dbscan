@@ -6,34 +6,35 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
 
-# =============================
-# Page Configuration
-# =============================
 st.set_page_config(page_title="NYC Taxi Hotspot Detection", layout="wide")
 
 st.title("🚕 NYC Taxi Pickup Hotspot Detection")
 st.markdown("Using **DBSCAN Clustering** to discover natural demand hotspots.")
 
-# =============================
-# Sidebar Controls
-# =============================
 
 st.sidebar.header("⚙️ Model Settings")
 eps_value = st.sidebar.slider("Select eps value", 0.1, 1.0, 0.3, 0.1)
 min_samples = st.sidebar.slider("Select min_samples", 3, 20, 5)
 
-@st.cache_data
-def load_data():
-    df = pd.read_csv("NewYorkCityTaxiTripDuration.csv")
-    return df
 
-df = load_data()
+st.subheader("📂 Upload Dataset")
 
-st.subheader("📂 Dataset Preview")
-st.dataframe(df.head())
+uploaded_file = st.file_uploader(
+    "Upload NewYorkCityTaxiTripDuration.csv",
+    type=["csv"]
+)
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    st.success("Dataset loaded successfully!")
+    st.dataframe(df.head())
+else:
+    st.warning("Please upload the CSV file to continue.")
+    st.stop()
 
 
 X = df[['pickup_latitude', 'pickup_longitude']].head(15000)
+
 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
@@ -49,10 +50,10 @@ noise_ratio = n_noise / len(labels)
 st.subheader("📊 Cluster Evaluation")
 
 col1, col2, col3 = st.columns(3)
-
 col1.metric("Clusters", n_clusters)
 col2.metric("Noise Points", n_noise)
 col3.metric("Noise Ratio", round(noise_ratio, 4))
+
 
 mask = labels != -1
 
