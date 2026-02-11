@@ -1,8 +1,5 @@
-numpy
+streamlit==1.31.1
 pandas
-matplotlib
+numpy
 scikit-learn
-scipy
-seaborn
-plotly
-streamlit
+matplotlib
